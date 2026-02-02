@@ -1,0 +1,85 @@
+/* 确保 HTML 和 Body 允许溢出内容，否则 Fixed 元素会被截断 */
+html, body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  overflow-x: hidden; /* 防止横向滚动条，但允许纵向滚动 */
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+:root {
+  --cream-white: #f9f7f2;
+  --morandi-beige: #e5e0d8;
+  --accent-orange: #ff8c42;
+}
+
+body {
+  background-image: url('/bg.jpg'); /* 使用你本地的背景图 */
+  background-size: cover;
+  background-attachment: fixed;
+  color: #5a5a5a;
+  cursor: none; /* 隐藏默认光标以使用自定义爪子 */
+  font-family: 'YourCustomFont', sans-serif;
+}
+
+/* 浅灰色星星阵列 */
+.star-pattern {
+  background-image: url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M10 0l2.5 7.5H20l-6 4.5 2.5 7.5-6.5-5-6.5 5 2.5-7.5-6-4.5h7.5L10 0z' fill='%23888888' fill-opacity='0.2'/%3E%3C/svg%3E");
+  background-size: 24px 24px; /* 控制星星的大小和间距 */
+  background-repeat: repeat;
+}
+
+/* 纸张质感类 */
+.paper-card {
+  transition: all 0.3s ease;
+  background: #f9f7f2;
+  border-radius: 8px;
+  background-image: url("https://www.transparenttextures.com/patterns/paper-fibers.png");
+  /* 柔和阴影 */
+  box-shadow: 2px 4px 12px rgba(0, 0, 0, 0.08);
+
+  
+}
+
+.thumb-size {
+  width: 5rem !important; 
+  height: 8rem !important;
+  flex-shrink: 0 !important;
+}
+
+/* 呼吸灯动画 */
+@keyframes breathing {
+  0% { transform: scale(1); opacity: 0.9; }
+  50% { transform: scale(1.1); opacity: 1; }
+  100% { transform: scale(1); opacity: 0.9; }
+}
+
+.cursor-paw {
+  position: fixed;
+  width: 24px;
+  height: 24px;
+  background-color: #ff8c42;
+  border-radius: 50%;
+  z-index: 99999; /* 确保它在最顶层 */
+  pointer-events: none; /* [重要] 允许点击穿透 */
+  transform: translate(-50%, -50%); /* 确保中心对齐 */
+}
+
+/* 足迹波纹 */
+.ripple {
+  position: fixed;
+  width: 10px;
+  height: 10px;
+  background: rgba(255, 140, 66, 0.2);
+  border-radius: 50%;
+  pointer-events: none;
+  animation: ripple-effect 1s forwards;
+}
+
+@keyframes ripple-effect {
+  to { transform: scale(4); opacity: 0; }
+}
