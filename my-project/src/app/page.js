@@ -3,6 +3,20 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { client, urlFor } from '@/sanity'; 
 
+function getImageId(imageObject) {
+  // Sanity的image对象中，asset._ref 格式通常是："image-图片ID-尺寸.扩展名"
+  // 例如：image-0bd20fad-3750x2500-jpg
+  const ref = imageObject?.asset?._ref;
+  if (!ref) return '';
+  // 移除开头的 'image-' 和文件扩展名，得到类似 "0bd20fad-3750x2500-jpg"
+  const withoutImagePrefix = ref.replace('image-', '');
+  const parts = withoutImagePrefix.split('-');
+  const lastPart = parts.pop(); // 取出最后一部分，如 "jpg"
+  const mainPart = parts.join('-'); // 剩余部分重新用 '-' 连接
+  const formattedId = `${mainPart}.${lastPart}`; // 组合为 "哈希-尺寸.扩展名"
+  return encodeURIComponent(formattedId); // 编码以防特殊字符
+}
+
 export default function GalleryPage() {
   const [groups, setGroups] = useState([]); 
   const [selectedId, setSelectedId] = useState(null);
@@ -110,7 +124,7 @@ export default function GalleryPage() {
             >
               <div className="w-full overflow-hidden rounded-md bg-white">
                 <img 
-                  src={urlFor(selectedId.image).width(1000).url()} 
+                  src={`/api/image?id=${getImageId(selectedId.image)}&width=1000`} 
                   className="w-full h-auto max-h-[65vh] object-contain cursor-zoom-out"
                   alt="enlarged"
                   onClick={() => setSelectedId(null)}
