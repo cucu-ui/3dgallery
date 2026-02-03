@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server';
 
 // 定义允许访问图片的域名白名单（必须包含协议头 http:// 或 https://）
 const ALLOWED_DOMAINS = [
-  'https://3dgallery-82o516xqw-cucus-projects-0de0210f.vercel.app', // 请替换为你的Vercel域名
+  'https://*.vercel.app', 
   'http://localhost:3000',                 // 本地开发环境
   // 未来可以在这里添加你的自定义域名
 ];
