@@ -1,5 +1,6 @@
 // my-project/src/app/api/image/route.js
 import { NextResponse } from 'next/server';
+import { addWatermarkToImage } from './watermark';
 
 // 定义允许访问图片的域名白名单（必须包含协议头 http:// 或 https://）
 const ALLOWED_DOMAINS = [
@@ -132,11 +133,26 @@ const normalizeUrlForComparison = (url) => {
     }
 
     // 获取Sanity返回的图片数据和响应头
-    const imageData = await imageResponse.arrayBuffer();
+    const imageBuffer = Buffer.from(await imageResponse.arrayBuffer());
     const contentType = imageResponse.headers.get('content-type') || 'image/jpeg';
 
+    let finalImageBuffer;
+    try {
+      finalImageBuffer = await addWatermarkToImage(imageBuffer, {
+        text: '© MUPICS', // 你的水印文字，建议使用你的网站名
+        position: 'bottom-right', // 水印位置：'center', 'top-left', 'top-right', 'bottom-left', 'bottom-right'
+        fontSize: 28,
+        color: 'rgba(255, 255, 255, 0.65)', // 白色，65%透明度
+        padding: 25
+    });
+   } catch (watermarkError) {
+     console.error('Failed to add watermark:', watermarkError);
+    // 如果水印处理失败，降级为返回原始图片
+    finalImageBuffer = imageBuffer;
+   }
+
     // 将图片响应返回给前端浏览器
-    return new NextResponse(imageData, {
+    return new NextResponse(finalImageBuffer, {
       status: 200,
       headers: {
         'Content-Type': contentType,

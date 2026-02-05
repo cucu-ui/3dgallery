@@ -21,6 +21,8 @@ export default function GalleryPage() {
   const [groups, setGroups] = useState([]); 
   const [selectedId, setSelectedId] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isLargeImageLoaded, setIsLargeImageLoaded] = useState(false);
+  
   const bgColors = [
   '#FFB37E', // 杏子橙
   '#B2D3A8', // 开心果绿
@@ -43,22 +45,27 @@ export default function GalleryPage() {
       setLoading(false);
     });
   }, []);
+  useEffect(() => {
+  // 当 selectedId 变化时（包括从 null 变为有值，即打开新弹窗），重置图片加载状态为 false
+  
+  setIsLargeImageLoaded(false);
+  }, [selectedId]); // 依赖项是 selectedId，它变化时此 effect 会运行
 
   if (loading) return <div className="text-center mt-20 text-stone-400 font-sans">正在翻开相册...</div>;
 
   return (
-    <div className="max-w-5xl mx-auto py-10 relative">
+    <div className="w-full md:max-w-5xl md:mx-auto px-4 sm:px-6 py-6 md:py-10 relative">
       {/* 缩略图列表 */}
       {groups.map((group) => (
         <div key={group.year} className="flex mb-16 items-start">
-          <div className="w-40 sticky top-24 text-4xl font-bold text-stone-300/80 italic font-sans">
+          <div className="w-20 md:w-40 sticky top-4 md:top-24 text-2xl md:text-4xl font-bold text-stone-300/80 italic font-sans">
             {group.year}
           </div>
           <div className="flex flex-wrap gap-4 flex-1">
             {group.photos.map((photo,index) => (
               <motion.div
                 key={photo._id}
-                layoutId={`card-${photo._id}`} // 增加前缀确保唯一
+                //layoutId={`card-${photo._id}`} // 增加前缀确保唯一
                 onClick={() => setSelectedId(photo)}
                 className="paper-card thumb-size p-2 cursor-pointer relative overflow-hidden flex flex-col"
                 style={{ backgroundColor: bgColors[index % bgColors.length] }} // index 可从 map 参数获取
@@ -94,56 +101,81 @@ export default function GalleryPage() {
 
       {/* 放大交互层 - 直接放在主容器内，使用 fixed 布局 */}
       <AnimatePresence>
-        {selectedId && (
-          <div className="fixed inset-0 z-[100]">
-            {/* 1. 背景遮罩 */}
-            <motion.div 
-              initial={{ opacity: 0 }} 
-              animate={{ opacity: 1 }} 
-              exit={{ opacity: 0 }}
-              onClick={() => setSelectedId(null)}
-              className="fixed inset-0 bg-stone-100/90 backdrop-blur-md cursor-pointer"
-            />
+  {selectedId && (
+    <>
+      {/* 背景遮罩 */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        onClick={() => setSelectedId(null)}
+        className="fixed inset-0 z-[100] bg-stone-100/90 backdrop-blur-md cursor-pointer"
+      />
+      
+      {/* 放大后的卡片 */}
+      <motion.div
+        // 1. 关键：移除了 layoutId
+        // 2. 初始状态：从非常小开始（scale: 0.2），位置在屏幕中央
+        initial={{ 
+          //opacity: 0, 
+          scale: 0.2,
+          x: "-50%",
+          y: "-50%"
+        }}
+        // 3. 动画状态：放大到1，完全可见
+        animate={{ 
+          //opacity: 1, 
+          scale: 1,
+          x: "-50%",
+          y: "-50%"
+        }}
+        exit={{ 
+          opacity: 0, 
+          scale: 0.2,
+          x: "-50%",
+          y: "-50%"
+        }}
+        // 4. 核心定位：通过 fixed + top/left + translate 实现绝对居中
+        className={`fixed left-1/2 top-1/2 z-[110] p-4 shadow-2xl w-[90vw] max-w-[500px] max-h-[90vh] bg-[#f9f7f2] cursor-default flex flex-col overflow-y-auto transition-opacity duration-300 ${isLargeImageLoaded ? 'opacity-100' : 'opacity-10'}`}
+        
+
+        style={{
+          // 将卡片中心点对准 top/left 定位点，确保缩放动画从中心进行
+          transformOrigin: 'center center',
+        }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* 图片容器 */}
+        <div className="w-full overflow-hidden rounded-md bg-white flex-shrink-0">
+          <img
+            src={`/api/image?id=${getImageId(selectedId.image)}&width=1000`}
+            className="w-full h-auto max-h-[60vh] object-contain cursor-zoom-out"
+            alt="enlarged"
+            onClick={() => setSelectedId(null)}
+            onLoad={() =>  {
+              
+              setIsLargeImageLoaded(true);}
+            }
+          />
+        </div>
+
+        {/* 信息区域 - 移动端直接显示 */}
+        <div className="mt-4 md:mt-6 pb-2 text-center flex-shrink-0">
+          <p className="text-stone-700 font-medium text-base md:text-lg">
+            {selectedId.description}
+          </p>
+          <p className="text-xs text-stone-400 mt-2 tracking-widest font-sans">
+            {selectedId.visitDate}
+          </p>
+          {/* 移动端关闭提示（可选） */}
+          <p className="mt-4 text-xs text-stone-500 md:hidden">
             
-            {/* 2. 放大后的卡片 */}
-            <motion.div
-              layoutId={`card-${selectedId._id}`}
-              
-              style={{
-                position: 'fixed',
-                left: '40%',
-                top: '20%',
-                x: '-30%',
-                y: '-30%',
-              }}
-              initial={{ opacity: 0, scale: 0.8}}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.8}}
-              className="z-[110] paper-card p-4 shadow-2xl w-[90vw] max-w-[500px] h-auto bg-[#f9f7f2] group cursor-default"
-              onClick={(e) => e.stopPropagation()} 
-            >
-              <div className="w-full overflow-hidden rounded-md bg-white">
-                <img 
-                  src={`/api/image?id=${getImageId(selectedId.image)}&width=1000`} 
-                  className="w-full h-auto max-h-[65vh] object-contain cursor-zoom-out"
-                  alt="enlarged"
-                  onClick={() => setSelectedId(null)}
-                />
-              </div>
-              
-              {/* 信息展示区域：点击图片后再展示文字，增加一点飞入动画 */}
-              <div className="mt-6 pb-2 text-center opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                <p className="text-stone-700 font-medium text-lg">
-                  {selectedId.description}
-                </p>
-                <p className="text-xs text-stone-400 mt-2 tracking-widest font-sans">
-                  {selectedId.visitDate}
-                </p>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
+          </p>
+        </div>
+      </motion.div>
+    </>
+  )}
+</AnimatePresence>
     </div>
   );
 }

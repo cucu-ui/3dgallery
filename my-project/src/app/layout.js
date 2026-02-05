@@ -30,6 +30,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="zh">
       <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
         <style>{`
           @font-face {
             font-family: 'YourCustomFont';
@@ -70,6 +71,23 @@ export default function RootLayout({ children }) {
         <main>
           {children}
         </main>
+        {/* 4. 页脚声明 */}
+        <footer style={{
+        textAlign: 'center',
+        padding: '2rem 0.1rem',
+        color: '#666',
+        fontSize: '1.0rem',
+        fontFamily: 'YourCustomFont, sans-serif', // 使用你的自定义字体
+        
+        
+    }}>
+      <p style={{
+        margin:0,
+        fontWeight: 'bold'
+      }}>
+        © {new Date().getFullYear()} mupics. 本网站所有内容（包括但不限于图片、设计）仅供个人欣赏，未经明确书面授权，禁止任何形式的转载、复制或用于商业用途。
+      </p>
+      </footer>
       </body>
     </html>
   );

@@ -20,10 +20,17 @@ html, body {
 body {
   background-image: url('/bg.jpg'); /* 使用你本地的背景图 */
   background-size: cover;
-  background-attachment: fixed;
+  background-position: center center;
+  /*background-attachment: scroll;*/
   color: #5a5a5a;
   cursor: none; /* 隐藏默认光标以使用自定义爪子 */
   font-family: 'YourCustomFont', sans-serif;
+}
+/* 当屏幕宽度小于 768px (通常是手机) 时 */
+@media (max-width: 768px) {
+  body {
+    background-position: top center; /* 手机端改为顶部对齐，可能更适合 */
+  }
 }
 
 /* 浅灰色星星阵列 */
@@ -41,6 +48,7 @@ body {
   background-image: url("https://www.transparenttextures.com/patterns/paper-fibers.png");
   /* 柔和阴影 */
   box-shadow: 2px 4px 12px rgba(0, 0, 0, 0.08);
+  box-sizing: border-box;
 
   
 }
@@ -82,4 +90,12 @@ body {
 
 @keyframes ripple-effect {
   to { transform: scale(4); opacity: 0; }
+}
+
+main > div:first-child {
+  padding-top: 2.0rem; /* 等同于 pt-6 */
+}
+
+div[class*="z-["] > .flex-shrink-0 {
+  padding-top: 2rem;
 }
