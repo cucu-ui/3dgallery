@@ -44,3 +44,13 @@ next-env.d.ts
 .env
 node_modules
 .next
+# 测试和临时文件
+test_*.jpg
+
+.DS_Store
+*.log
+node_modules/
+
+# 本地测试图片目录
+public/work-images/
+public/work-images/*

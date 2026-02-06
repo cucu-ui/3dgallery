@@ -2,6 +2,12 @@
 import { createCanvas, loadImage, registerFont } from 'canvas';
 import path from 'path';
 
+
+
+
+
+
+
 /**
  * 为图片Buffer添加文字水印
  * @param {Buffer} imageBuffer - 原始的图片二进制数据
@@ -14,13 +20,14 @@ import path from 'path';
  * @param {number} [options.padding=20] - 水印与图片边缘的间距（当位置在边角时）
  * @returns {Promise<Buffer>} - 添加水印后的图片Buffer
  */
+
 export async function addWatermarkToImage(imageBuffer, options = {}) {
   // 合并默认选项和用户选项
   const {
     text = '@MUPICS', // 请将 YourSite 改为你的网站名或水印内容
     position = 'bottom-right',
     fontSize = 24,
-    fontFamily = 'Arial',
+    fontFamily = 'Helvetica, Arial, sans-serif',
     color = 'rgba(255, 255, 255, 0.6)',
     padding = 20
   } = options;
