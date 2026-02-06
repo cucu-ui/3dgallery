@@ -9,7 +9,7 @@
   "scripts": {
  
    
-  "dev": "next dev",
+  "dev": "next dev --turbopack",
  
    
   "build": "next build",
@@ -18,7 +18,10 @@
   "start": "next start",
  
    
-  "lint": "eslint"
+  "lint": "next lint",
+  "create-watermark": "node create-watermark-image.js",
+    "test-watermark": "node test-watermark.js",
+     "dev:webpack": "next dev --webpack" 
  
   },
  
@@ -75,3 +78,4 @@
  
   }
 }
+
